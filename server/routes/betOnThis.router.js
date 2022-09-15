@@ -1,8 +1,11 @@
 const express = require('express');
 const pool = require('../modules/pool');
 const router = express.Router();
+const {
+  rejectUnauthenticated,
+} = require('../modules/authentication-middleware');
 
-router.get('/:score_id', (req, res) => {
+router.get('/:score_id',rejectUnauthenticated, (req, res) => {
 
       let queryText = `SELECT * FROM "games"
       WHERE score_id = $1;`;
@@ -19,7 +22,7 @@ router.get('/:score_id', (req, res) => {
       
 });
 
-router.post('/', (req, res) => {
+router.post('/', rejectUnauthenticated, (req, res) => {
     const bet = req.body;
     const queryText = `
     INSERT INTO "user_bets" ("user_id", "score_id", "chosen_team", "chosen_team_id", "chosen_moneyline", "un_chosen_team", "un_chosen_team_id", "un_chosen_moneyline", "week", "time", "bet_amount", "profit", "is_completed")

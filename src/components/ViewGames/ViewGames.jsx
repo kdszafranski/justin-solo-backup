@@ -54,6 +54,13 @@ function ViewGames() {
 
     return(
         <>
+        <div className='hero-image-conatiner'>
+            <div className='hero-text'>
+                <h1>SMARTBET</h1>
+                <p>The tracking app for BETter decision making</p>
+            </div>
+            <img className='hero-image' src={process.env.PUBLIC_URL + '/HeroImage/HeroImage.svg'} />
+        </div>
             <h1>Games for Week: {selectedWeek || 1}</h1>
             <select onChange={() => updateSelecetedWeek(event)}>
                 <option value={selectedWeek}>Select a Week</option>
@@ -76,32 +83,104 @@ function ViewGames() {
                 <option value="17">17</option>
                 <option value="18">18</option>
             </select>
-            {/* <button onClick={() => getGamesFromDatabase()}>View Games!</button> */}
+            
+            <h1>Upcoming Games</h1>
             {games.map( game => {
-                if ( game.week == selectedWeek) {
+                if ( game.week == selectedWeek && game.is_over === false) {
                     // use moment js to parse time into easy to read text.
+                    //Full Date
                     const date = moment(game.time).format('LLLL')
                     const gameTime = new Date(game.time).getTime();
+                    // used to display time on listings
+                    const day = moment(game.time).format('dddd');
+                    const shortDate = moment(game.time).format("MMM D");
+                    const hour = moment(game.time).format('LT');
                 return (
                 <div className='game-listing' key={game.score_id}>
-                    <h3>{date} EST</h3>
+                    {/* <h1>upcoming games</h1> */}
+                    <div className='time-box'>
+                        <h3 className='time-data'>{day}</h3>
+                        <h3 className='time-data'>{shortDate}</h3>
+                        <p className='time-data'>{hour} EST</p>
+                    </div>
                     <div className='away-team'>
                         <img className='team-logo' src={process.env.PUBLIC_URL + '/NflLogos/' + game.away_team + '.svg'} alt="logo" />
-                        <p>{game.away_full_name}</p>
+                        
                         {/* <p>Away Moneyline: {game.away_moneyline || 'TBD'}</p> */}
                     </div>
                     <p className='at-seperator'>at</p>
                     <div className='home-team'>
                         <img className='team-logo' src={process.env.PUBLIC_URL + '/NflLogos/' + game.home_team + '.svg'} alt="logo" />
-                        <p>{game.home_full_name}</p>
+                        
                         {/* <p>Home Moneyline: {game.home_moneyline || 'TBD'}</p> */}
+                    </div>
+                    <div className='team-names'>
+                        <p>{game.away_full_name}</p>
+                        <p>{game.home_full_name}</p>
+                    </div>
+                    <div className='team-moneylines'>
+                        <p>{game.away_moneyline || 'TBD'}</p>
+                        <p>{game.home_moneyline || 'TBD'}</p>
+                    </div>
+                    <div className='game-info'>
+                        {gameTime < timeNumber ?
+                        <p className='game-score'>Final Score: {game.home_team}:{game.home_score} {game.away_team}:{game.away_score}</p>
+                        :
+                        <>
+                            <p>{game.channel || 'TBD'}</p>
+                            {selectedWeek == currentWeek || selectedWeek == currentWeek+1? <button className='place-bet-button' onClick={() => betOnThis(game)}>PLACE BET</button>: <></>}
+                        </>
+                        }
+                    </div>
+                </div>
+                )
+                }
+})}
+
+            <h1>Completed Games</h1>
+            {games.map( game => {
+                if ( game.week == selectedWeek && game.is_over === true) {
+                    // use moment js to parse time into easy to read text.
+                    //Full Date
+                    const date = moment(game.time).format('LLLL')
+                    const gameTime = new Date(game.time).getTime();
+
+                    const day = moment(game.time).format('dddd');
+                    const shortDate = moment(game.time).format("MMM D");
+                    const hour = moment(game.time).format('LT');
+                return (
+                <div className='game-listing' key={game.score_id}>
+                    {/* <h1>upcoming games</h1> */}
+                    <div className='time-box'>
+                        <h3 className='time-data'>{day}</h3>
+                        <h3 className='time-data'>{shortDate}</h3>
+                        <p className='time-data'>{hour} EST</p>
+                    </div>
+                    <div className='away-team'>
+                        <img className='team-logo' src={process.env.PUBLIC_URL + '/NflLogos/' + game.away_team + '.svg'} alt="logo" />
+                        
+                        {/* <p>Away Moneyline: {game.away_moneyline || 'TBD'}</p> */}
+                    </div>
+                    <p className='at-seperator'>at</p>
+                    <div className='home-team'>
+                        <img className='team-logo' src={process.env.PUBLIC_URL + '/NflLogos/' + game.home_team + '.svg'} alt="logo" />
+                        
+                        {/* <p>Home Moneyline: {game.home_moneyline || 'TBD'}</p> */}
+                    </div>
+                    <div className='team-names'>
+                        <p>{game.away_full_name}</p>
+                        <p>{game.home_full_name}</p>
+                    </div>
+                    <div className='team-moneylines'>
+                        <p>{game.away_moneyline || 'TBD'}</p>
+                        <p>{game.home_moneyline || 'TBD'}</p>
                     </div>
                     <div className='game-info'>
                         {gameTime < timeNumber ?
                         <p>Final Score: {game.home_team}:{game.home_score} {game.away_team}:{game.away_score}</p>
                         :
                         <>
-                            <p>Channel: {game.channel || 'TBD'}</p>
+                            <p>{game.channel || 'TBD'}</p>
                             {selectedWeek == currentWeek || selectedWeek == currentWeek+1? <button onClick={() => betOnThis(game)}>Bet On This</button>: <></>}
                         </>
                         }
